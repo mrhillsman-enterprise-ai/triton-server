@@ -27,7 +27,9 @@
 #include "tracer.h"
 
 #include <stdlib.h>
+
 #include <unordered_map>
+
 #include "common.h"
 #include "triton/common/logging.h"
 #ifdef TRITON_ENABLE_GPU
@@ -395,12 +397,6 @@ TraceManager::Trace::CaptureTimestamp(
 #endif
     }
   }
-  LOG_TRITONSERVER_ERROR(
-      TRITONSERVER_InferenceTraceSetName(trace_, name.c_str()),
-      "set trace name");
-  LOG_TRITONSERVER_ERROR(
-      TRITONSERVER_InferenceTraceReportActivity(trace_, timestamp_ns),
-      "report trace activity");
 }
 
 void
@@ -848,10 +844,10 @@ TraceManager::TraceActivity(
 
   *ss << "{\"id\":" << id << ",\"timestamps\":[";
   if (activity == TRITONSERVER_TRACE_CUSTOM_ACTIVITY) {
-    const char* name = "";
-    LOG_TRITONSERVER_ERROR(
-        TRITONSERVER_InferenceTraceName(trace, &name), "getting trace name");
-    *ss << "{\"name\":\"" << name;
+    // const char* name = "";
+    // LOG_TRITONSERVER_ERROR(
+    //     TRITONSERVER_InferenceTraceName(trace, &name), "getting trace name");
+    *ss << "{\"name\":\" custom activity";
   } else {
     *ss << "{\"name\":\""
         << TRITONSERVER_InferenceTraceActivityString(activity);

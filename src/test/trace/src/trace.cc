@@ -60,12 +60,12 @@ namespace triton { namespace backend { namespace implicit {
 TRITONSERVER_Error*
 ReportTrace(TRITONSERVER_InferenceTrace* trace, const char* name)
 {
-  RETURN_IF_ERROR(TRITONSERVER_InferenceTraceSetName(trace, name));
+  // RETURN_IF_ERROR(TRITONSERVER_InferenceTraceSetName(trace, name));
 
   uint64_t timestamp_ms;
   SET_TIMESTAMP(timestamp_ms);
-  RETURN_IF_ERROR(
-      TRITONSERVER_InferenceTraceReportActivity(trace, timestamp_ms));
+  RETURN_IF_ERROR(TRITONSERVER_InferenceTraceReportActivity(
+      trace, timestamp_ms, "non-generic_testing_functionality_activity_name"));
   return nullptr;  // success
 }
 
