@@ -285,7 +285,11 @@ class BuildScript:
         env_args = []
         for k in ("TRT_VERSION", "CMAKE_TOOLCHAIN_FILE", "VCPKG_TARGET_TRIPLET"):
             env_args += [f'"-D{k}={self.envvar_ref(k)}"']
-        self.cmd(f'cmake -G "Ninja" {" ".join(env_args)} {" ".join(args)}', check_exitcode=True)
+
+        if target_platform() == "windows":
+            self.cmd(f'cmake -G "Ninja" {" ".join(env_args)} {" ".join(args)}', check_exitcode=True)
+        else:
+            self.cmd(f'cmake {" ".join(env_args)} {" ".join(args)}', check_exitcode=True)
 
     def makeinstall(self, target="install"):
         verbose_flag = "-v" if self._verbose else ""
