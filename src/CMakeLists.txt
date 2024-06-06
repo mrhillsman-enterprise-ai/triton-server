@@ -358,7 +358,7 @@ if(${TRITON_ENABLE_HTTP}
     target_compile_options(
       http-endpoint-library
       PRIVATE
-        /W1 /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor
+        /W1 /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor /P
     )
   else()
     target_compile_options(
@@ -601,7 +601,7 @@ if (NOT WIN32)
     target_compile_options(
       simple
       PRIVATE
-        /W1 /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor
+        /W1 /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor /P
     )
   else()
     target_compile_options(
@@ -665,7 +665,7 @@ if (NOT WIN32)
     target_compile_options(
       multi_server
       PRIVATE
-        /W1 /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor
+        /W1 /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor /P
     )
   else()
     target_compile_options(
@@ -730,7 +730,7 @@ if (NOT WIN32)
       target_compile_options(
         memory_alloc
         PRIVATE
-          /W1 /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor
+          /W1 /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor /P
       )
     else()
       target_compile_options(
