@@ -172,10 +172,10 @@ COPY --chown=1000:1000 --from=full /usr/bin/serve /usr/bin/.
 
 
 def build_docker_image(ddir, dockerfile_name, container_name):
-    # Create container with docker build
+    # Create container with podman build
     p = subprocess.Popen(
         [
-            "docker",
+            "podman",
             "build",
             "-t",
             container_name,
@@ -185,7 +185,7 @@ def build_docker_image(ddir, dockerfile_name, container_name):
         ]
     )
     p.wait()
-    fail_if(p.returncode != 0, "docker build {} failed".format(container_name))
+    fail_if(p.returncode != 0, "podman build {} failed".format(container_name))
 
 
 def get_container_version_if_not_specified():
@@ -209,23 +209,23 @@ def create_argmap(images, skip_pull):
     min_docker_image = images["min"]
     enable_gpu = FLAGS.enable_gpu
     # Docker inspect environment variables
-    base_run_args = ["docker", "inspect", "-f"]
+    base_run_args = ["podman", "inspect", "-f"]
     import re  # parse all PATH environment variables
 
-    # first pull docker images
+    # first pull podman images
     if not skip_pull:
         log("pulling container:{}".format(full_docker_image))
-        p = subprocess.run(["docker", "pull", full_docker_image])
+        p = subprocess.run(["podman", "pull", full_docker_image])
         fail_if(
             p.returncode != 0,
-            "docker pull container {} failed, {}".format(full_docker_image, p.stderr),
+            "podman pull container {} failed, {}".format(full_docker_image, p.stderr),
         )
     if enable_gpu:
         if not skip_pull:
-            pm = subprocess.run(["docker", "pull", min_docker_image])
+            pm = subprocess.run(["podman", "pull", min_docker_image])
             fail_if(
                 pm.returncode != 0 and not skip_pull,
-                "docker pull container {} failed, {}".format(
+                "podman pull container {} failed, {}".format(
                     min_docker_image, pm.stderr
                 ),
             )
@@ -240,7 +240,7 @@ def create_argmap(images, skip_pull):
         )
         fail_if(
             pm_path.returncode != 0,
-            "docker inspect to find triton environment variables for min container failed, {}".format(
+            "podman inspect to find triton environment variables for min container failed, {}".format(
                 pm_path.stderr
             ),
         )
@@ -265,7 +265,7 @@ def create_argmap(images, skip_pull):
     )
     fail_if(
         p_path.returncode != 0,
-        "docker inspect to find environment variables for full container failed, {}".format(
+        "podman inspect to find environment variables for full container failed, {}".format(
             p_path.stderr
         ),
     )
@@ -289,13 +289,13 @@ def create_argmap(images, skip_pull):
     version = "" if e is None else e.group(1)
     fail_if(
         len(version) == 0,
-        "docker inspect to find triton server version failed, {}".format(p_path.stderr),
+        "podman inspect to find triton server version failed, {}".format(p_path.stderr),
     )
     e = re.search("NVIDIA_TRITON_SERVER_VERSION=([\S]{5,}) ", vars)
     container_version = "" if e is None else e.group(1)
     fail_if(
         len(container_version) == 0,
-        "docker inspect to find triton container version failed, {}".format(vars),
+        "podman inspect to find triton container version failed, {}".format(vars),
     )
     dcgm_ver = re.search("DCGM_VERSION=([\S]{4,}) ", vars)
     dcgm_version = ""
@@ -310,7 +310,7 @@ def create_argmap(images, skip_pull):
         dcgm_version = dcgm_ver.group(1)
     fail_if(
         len(dcgm_version) == 0,
-        "docker inspect to find DCGM version failed, {}".format(vars),
+        "podman inspect to find DCGM version failed, {}".format(vars),
     )
 
     p_sha = subprocess.run(
@@ -321,7 +321,7 @@ def create_argmap(images, skip_pull):
     )
     fail_if(
         p_sha.returncode != 0,
-        "docker inspect of upstream docker image build sha failed, {}".format(
+        "podman inspect of upstream podman image build sha failed, {}".format(
             p_sha.stderr
         ),
     )
@@ -333,13 +333,13 @@ def create_argmap(images, skip_pull):
     )
     fail_if(
         p_build.returncode != 0,
-        "docker inspect of upstream docker image build sha failed, {}".format(
+        "podman inspect of upstream podman image build sha failed, {}".format(
             p_build.stderr
         ),
     )
 
     p_find = subprocess.run(
-        ["docker", "run", full_docker_image, "bash", "-c", "ls /usr/bin/"],
+        ["podman", "run", full_docker_image, "bash", "-c", "ls /usr/bin/"],
         capture_output=True,
         text=True,
     )
@@ -440,7 +440,7 @@ if __name__ == "__main__":
         "--skip-pull",
         action="store_true",
         required=False,
-        help="Do not pull the required docker images. The user is responsible "
+        help="Do not pull the required podman images. The user is responsible "
         "for pulling the upstream images needed to compose the image.",
     )
     parser.add_argument(
@@ -466,7 +466,7 @@ if __name__ == "__main__":
     if FLAGS.cache is None:
         FLAGS.cache = []
 
-    # Initialize map of docker images.
+    # Initialize map of podman images.
     images = {}
     if FLAGS.image:
         for img in FLAGS.image:
