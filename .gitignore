@@ -1,5 +1,7 @@
 /build
 /builddir
+/cmake-build-debug
+/.idea
 /.vscode
 *.so
 __pycache__
